@@ -3,7 +3,7 @@ import requests
 
 app = Flask(__name__)
 
-ESP_IP = "http://12:39:50.452"  # Your ESP8266 IP address
+ESP_IP = "http://10.81.235.148"  # Your ESP8266 IP address
 
 @app.route("/sms", methods=["POST"])
 def sms_webhook():
