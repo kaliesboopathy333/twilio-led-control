@@ -1,31 +1,21 @@
 from flask import Flask, request
-import requests
 
 app = Flask(__name__)
 
-ESP_IP = "http://10.81.235.148"  # Your ESP8266 IP address
+led_state = {"status": "off"}  # default
 
 @app.route("/sms", methods=["POST"])
 def sms_webhook():
-    incoming_msg = request.values.get('Body', '')
-    msg = incoming_msg.strip().lower()
-    print("📲 WhatsApp Message Received:", msg)
+    incoming_msg = request.values.get('Body', '').strip().lower()
+    if "on" in incoming_msg:
+        led_state["status"] = "on"
+        return "Turning ON", 200
+    elif "off" in incoming_msg:
+        led_state["status"] = "off"
+        return "Turning OFF", 200
+    else:
+        return "Invalid command", 200
 
-    try:
-        if 'oled on' in msg:
-            requests.get(f"{ESP_IP}/on")
-            print("✅ LED ON triggered")
-            return "LED turned ON", 200
-        elif 'oled off' in msg:
-            requests.get(f"{ESP_IP}/off")
-            print("✅ LED OFF triggered")
-            return "LED turned OFF", 200
-        else:
-            print("⚠️ Invalid command")
-            return "Invalid command", 200
-    except Exception as e:
-        print("❌ Error:", e)
-        return "ESP8266 not reachable", 500
-
-if __name__ == "__main__":
-    app.run(port=5000)
+@app.route("/led-status", methods=["GET"])
+def get_led_status():
+    return led_state["status"], 200
