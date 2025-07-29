@@ -1,6 +1,6 @@
 from flask import Flask, request
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 led_state = {"status": "off"}  # default
 
